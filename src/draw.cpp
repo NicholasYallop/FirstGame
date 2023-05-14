@@ -34,9 +34,15 @@ void blit(SDL_Texture *texture, int x, int y){
 	SDL_RenderCopy(app.renderer, texture, NULL, &dest);
 }
 
-void blit(SDL_Texture *texture, int x, int y, SDL_Rect *displayRect)
+void blit(SDL_Texture *texture, int x, int y, int w, int h)
 {
+	SDL_Rect dest;
+
+	dest.x = x;
+	dest.y = y;
+	dest.w = w;
+	dest.h = h;
 	SDL_QueryTexture(texture, NULL, NULL, NULL, NULL);
 
-	SDL_RenderCopy(app.renderer, texture, NULL, displayRect);
+	SDL_RenderCopy(app.renderer, texture, NULL, &dest);
 }
