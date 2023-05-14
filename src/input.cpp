@@ -1,4 +1,4 @@
-#include "input.h"
+#include "common.h"
 
 void doInput(void)
 {
