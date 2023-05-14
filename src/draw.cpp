@@ -24,8 +24,7 @@ SDL_Texture *loadTexture(char *filename)
 	return texture;
 }
 
-void blit(SDL_Texture *texture, int x, int y)
-{
+void blit(SDL_Texture *texture, int x, int y){
 	SDL_Rect dest;
 
 	dest.x = x;
@@ -33,4 +32,11 @@ void blit(SDL_Texture *texture, int x, int y)
 	SDL_QueryTexture(texture, NULL, NULL, &dest.w, &dest.h);
 
 	SDL_RenderCopy(app.renderer, texture, NULL, &dest);
+}
+
+void blit(SDL_Texture *texture, int x, int y, SDL_Rect *displayRect)
+{
+	SDL_QueryTexture(texture, NULL, NULL, NULL, NULL);
+
+	SDL_RenderCopy(app.renderer, texture, NULL, displayRect);
 }

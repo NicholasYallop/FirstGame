@@ -13,6 +13,12 @@ int main(void){
 	player.y = 100;
 	player.texture = loadTexture("gfx/crash_test_dummy.png");
 
+	SDL_Rect displayRect = SDL_Rect();
+	displayRect.x = 100;
+	displayRect.y = 100;
+	displayRect.w = 100;
+	displayRect.h = 100;
+
 	//TODO: collect garbage
 	//atexit(cleanup);
 
@@ -22,7 +28,7 @@ int main(void){
 
 		doInput();
 
-		blit(player.texture, player.x, player.y);
+		blit(player.texture, player.x, player.y, &displayRect);
 
 		presentScene();
 
