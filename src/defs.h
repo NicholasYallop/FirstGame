@@ -3,8 +3,11 @@
 
 #define PLAYER_HEIGHT 100
 #define PLAYER_WIDTH 100
-#define PLAYER_SPEED          4
-#define PLAYER_BULLET_SPEED   16
+#define PLAYER_SPEED 4
+#define PLAYER_BULLET_SPEED 16
+
+#define ENEMY_HEIGHT 75
+#define ENEMY_WIDTH 75
 
 #define BULLET_HEIGHT 20
 #define BULLET_WIDTH 20

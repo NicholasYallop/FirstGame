@@ -1,9 +1,11 @@
 #include "common.h"
 
 extern App app;
-Stage stage;
-SDL_Texture *bulletTexture;
-Entity *player;
+static Stage stage;
+static SDL_Texture *bulletTexture;
+static SDL_Texture *enemyTexture;
+static Entity *player;
+float enemySpawnTimer;
 
 static void fireBullet(void)
 {
@@ -60,9 +62,6 @@ static void doPlayer(void)
 	{
 		fireBullet();
 	}
-
-	player->x += player->dx;
-	player->y += player->dy;
 }
 
 static void doBullets(void)
@@ -102,21 +101,79 @@ static void doBullets(void)
 	}
 }
 
+static void doFighters(void)
+{
+	Entity *e, *prev;
+
+	prev = &stage.fighterHead;
+
+	for (e = stage.fighterHead.next ; e != NULL ; e = e->next)
+	{
+		e->x += e->dx;
+		e->y += e->dy;
+
+		if (e != player && e->x < -e->w)
+		{
+			if (e == stage.fighterTail)
+			{
+				stage.fighterTail = prev;
+			}
+
+			prev->next = e->next;
+			free(e);
+			e = prev;
+		}
+
+		prev = e;
+	}
+}
+
+static void spawnEnemies(void)
+{
+	Entity *enemy;
+
+	if (--enemySpawnTimer <= 0)
+	{
+		enemy = new Entity();
+		stage.fighterTail->next = enemy;
+		stage.fighterTail = enemy;
+
+		enemy->x = SCREEN_WIDTH;
+		enemy->y = rand() % SCREEN_HEIGHT;
+		enemy->w = ENEMY_WIDTH;
+		enemy->h = ENEMY_HEIGHT;
+		enemy->texture = enemyTexture;
+
+		enemy->dx = -(2 + (rand() % 4));
+
+		enemySpawnTimer = 30 + (rand() % 60);
+	}
+}
+
 static void logic(void)
 {
 	doPlayer();
 
+	doFighters();
+
 	doBullets();
+
+	spawnEnemies();
 }
 
-static void drawPlayer(void)
+static void drawFighters(void)
 {
-	if (!player->h && !player->w){
-		blit(player->texture, player->x, player->y);
-		return;
-	}
+	Entity *e;
 
-	blit(player->texture, player->x, player->y, player->w, player->h);
+	for (e = stage.fighterHead.next ; e != NULL ; e = e->next)
+	{
+		if (!e->h || !e->w){
+			blit(e->texture, e->x, e->y);
+		}
+		else{
+			blit(e->texture, e->x, e->y, e->w, e->h);
+		}
+	}
 }
 
 static void drawBullets(void)
@@ -125,7 +182,7 @@ static void drawBullets(void)
 
 	for (b = stage.bulletHead.next ; b != NULL ; b = b->next)
 	{
-		if (!b->w && !b->h){
+		if (!b->w || !b->h){
 			blit(b->texture, b->x, b->y);
 		}
 		else{
@@ -136,7 +193,7 @@ static void drawBullets(void)
 
 static void draw(void)
 {
-	drawPlayer();
+	drawFighters();
 
 	drawBullets();
 }
@@ -167,4 +224,7 @@ void initStage(void)
 	initPlayer();
 
 	bulletTexture = loadTexture("gfx/gcse.png");
+	enemyTexture = loadTexture("gfx/eye_test.jpg");
+
+	enemySpawnTimer = 0;
 }

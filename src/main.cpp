@@ -1,6 +1,6 @@
 #include "common.h"
 
-App app = App();
+App app;
 
 static void capFrameRate(long *then, float *remainder)
 {
@@ -30,7 +30,7 @@ int main(void){
 	long then;
 	float remainder;
 
-    memset(&app, 0, sizeof(App)); // empties the memory occupied by the app variable
+    app = App();
 
 	initSDL();
 
