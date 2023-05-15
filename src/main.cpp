@@ -1,27 +1,44 @@
 #include "common.h"
 
 App app = App();
-Entity player = Entity();
-Entity bullet = Entity();
+
+static void capFrameRate(long *then, float *remainder)
+{
+	long wait, frameTime;
+
+	wait = 16 + *remainder;
+
+	*remainder -= (int)*remainder;
+
+	frameTime = SDL_GetTicks() - *then;
+
+	wait -= frameTime;
+
+	if (wait < 1)
+	{
+		wait = 1;
+	}
+
+	SDL_Delay(wait);
+
+	*remainder += 0.667;
+
+	*then = SDL_GetTicks();
+}
 
 int main(void){
+	long then;
+	float remainder;
+
     memset(&app, 0, sizeof(App)); // empties the memory occupied by the app variable
-	memset(&player, 0, sizeof(Entity));
-	memset(&bullet, 0, sizeof(Entity));
 
 	initSDL();
 
-	player.texture = loadTexture("gfx/crash_test_dummy.png");
-	player.x = 100;
-	player.y = 100;
-	player.w = 100;
-	player.h = 100;
+	initStage();
 
-	bullet.texture = loadTexture("gfx/gcse.png");
-	bullet.x = 100;
-	bullet.y = 100;
-	bullet.w = 10;
-	bullet.h = 10;
+	then = SDL_GetTicks();
+
+	remainder = 0;
 
 	//TODO: collect garbage
 	//atexit(cleanup);
@@ -32,55 +49,13 @@ int main(void){
 
 		doInput();
 
-		player.x += player.dx;
-		player.y += player.dy;
+		app.delegate.logic();
 
-		if (app.up)
-		{
-			player.y -= 4;
-		}
+		app.delegate.draw();
 
-		if (app.down)
-		{
-			player.y += 4;
-		}
-
-		if (app.left)
-		{
-			player.x -= 4;
-		}
-
-		if (app.right)
-		{
-			player.x += 4;
-		}
-
-		if (app.fire && bullet.health == 0)
-		{
-			bullet.x = player.x;
-			bullet.y = player.y;
-			bullet.dx = 16;
-			bullet.dy = 0;
-			bullet.health = 1;
-		}
-
-		bullet.x += bullet.dx;
-		bullet.y += bullet.dy;
-
-		if (bullet.x > SCREEN_WIDTH)
-		{
-			bullet.health = 0;
-		}
-
-		blit(player.texture, player.x, player.y, player.w, player.h);
-
-		if (bullet.health > 0)
-		{
-			blit(bullet.texture, bullet.x, bullet.y, bullet.w, bullet.h);
-		}
 		presentScene();
 
-		SDL_Delay(16);
+		capFrameRate(&then, &remainder);
 	}
 
 	return 0;

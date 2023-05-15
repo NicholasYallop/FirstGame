@@ -1,24 +1,30 @@
 #include "SDL2/SDL.h"
 
-typedef struct {
-	public:
-		// SDL components
-		SDL_Renderer *renderer;
-		SDL_Window *window;
+struct Entity;
 
-		// input flags	
-		int up;
-		int down;
-		int left;
-		int right;
-		int fire;
-} App;
-
-typedef struct {
-	int x, y;
+struct Entity {
+	float x, y;
 	int w, h;
-	int dx;
-	int dy;
+	float dx, dy;
 	int health;
+	int reload;
 	SDL_Texture *texture;
-} Entity;
+	Entity *next;
+};
+
+typedef struct {
+	void (*logic)(void);
+	void (*draw)(void);
+} Delegate;
+
+typedef struct {
+	Entity fighterHead, *fighterTail;
+	Entity bulletHead, *bulletTail;
+} Stage;
+
+typedef struct {
+	SDL_Renderer *renderer;
+	SDL_Window *window;
+	Delegate delegate;
+	int keyboard[MAX_KEYBOARD_KEYS];
+} App;

@@ -5,3 +5,4 @@
 #include "draw.h"
 #include "init.h"
 #include "input.h"
+#include "stage.h"
