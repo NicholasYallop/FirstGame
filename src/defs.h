@@ -9,6 +9,9 @@
 #define ENEMY_HEIGHT 75
 #define ENEMY_WIDTH 75
 
+#define SIDE_PLAYER 0
+#define SIDE_ALIEN 1
+
 #define BULLET_HEIGHT 20
 #define BULLET_WIDTH 20
 

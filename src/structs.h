@@ -8,6 +8,7 @@ struct Entity {
 	float dx, dy;
 	int health;
 	int reload;
+	int side;
 	SDL_Texture *texture;
 	Entity *next;
 };

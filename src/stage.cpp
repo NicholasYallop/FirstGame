@@ -29,6 +29,24 @@ static void fireBullet(void)
 	player->reload = 8;
 }
 
+static int bulletHitFighter(Entity *b)
+{
+	Entity *e;
+
+	for (e = stage.fighterHead.next ; e != NULL ; e = e->next)
+	{
+		if (e->side != b->side && collision(b->x, b->y, b->w, b->h, e->x, e->y, e->w, e->h))
+		{
+			b->health = 0;
+			e->health = 0;
+
+			return 1;
+		}
+	}
+
+	return 0;
+}
+
 static void doPlayer(void)
 {
 	player->dx = player->dy = 0;
@@ -75,7 +93,7 @@ static void doBullets(void)
 		b->x += b->dx;
 		b->y += b->dy;
 
-		if (b->x > SCREEN_WIDTH)
+		if (bulletHitFighter(b) || b->x > SCREEN_WIDTH)
 		{
 			// 	all this removes an element from the linked list
 			if (b == stage.bulletTail)
@@ -112,18 +130,18 @@ static void doFighters(void)
 		e->x += e->dx;
 		e->y += e->dy;
 
-		if (e != player && e->x < -e->w)
+		if (e != player && (e->x < -e->w || e->health == 0))
 		{
 			if (e == stage.fighterTail)
 			{
 				stage.fighterTail = prev;
 			}
-
+		
 			prev->next = e->next;
 			free(e);
 			e = prev;
 		}
-
+		
 		prev = e;
 	}
 }
@@ -142,6 +160,8 @@ static void spawnEnemies(void)
 		enemy->y = rand() % SCREEN_HEIGHT;
 		enemy->w = ENEMY_WIDTH;
 		enemy->h = ENEMY_HEIGHT;
+		enemy->health = 1;
+		enemy->side = SIDE_ALIEN;
 		enemy->texture = enemyTexture;
 
 		enemy->dx = -(2 + (rand() % 4));
@@ -209,6 +229,7 @@ static void initPlayer()
 	player->y = 100;
 	player->w = PLAYER_WIDTH;
 	player->h = PLAYER_HEIGHT;
+	player->side = SIDE_PLAYER;
 	player->texture = loadTexture("gfx/crash_test_dummy.png");
 }
 
